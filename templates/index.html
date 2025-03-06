@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Travel Itinerary Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <link rel="icon" href="/static/image.png">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo-row">
+                    <img src="/static/logo1.png" alt="Logo 1" class="logo">
+                    <img src="/static/logo2.png" alt="Logo 2" class="logo">
+                </div>
+                <div class="logo-row">
+                    <img src="/static/logo3.png" alt="Logo 3" class="logo">
+                </div>
+            </div>
+            <h1>AI Travel Itinerary Generator</h1>
+            <p>Create personalized travel itineraries based on your preferences</p>
+        </header>
+        
+
+        <div class="form-container">
+            <form id="itineraryForm">
+                <div class="form-group">
+                    <label for="destination">Destination:</label>
+                    <input type="text" id="destination" name="destination" required 
+                           placeholder="e.g., Paris, Tokyo, New York">
+                </div>
+
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration (days):</label>
+                    <input type="number" id="duration" name="duration" min="1" max="30" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="interests">Interests:</label>
+                    <select id="interests" name="interests" multiple>
+                        <option value="adventure">Adventure</option>
+                        <option value="culture">Culture</option>
+                        <option value="food">Food & Dining</option>
+                        <option value="beaches">Beaches</option>
+                        <option value="historical">Historical Sites</option>
+                        <option value="shopping">Shopping</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="budget">Budget (per day in USD):</label>
+                    <input type="number" id="budget" name="budget" min="50" max="5000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="travel_style">Travel Style:</label>
+                    <select id="travel_style" name="travel_style">
+                        <option value="adventurous">Adventurous</option>
+                        <option value="relaxed">Relaxed</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="budget">Budget</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="generateBtn">Generate Itinerary</button>
+            </form>
+        </div>
+
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h2>Your Travel Itinerary</h2>
+            <div id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating itinerary...</p>
+            </div>
+            <div id="results">
+                <!-- Results will appear here -->
+            </div>
+            <button id="copyBtn">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script >
+       document.getElementById('itineraryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+
+    // Convert multiple selected interests into a comma-separated string
+    const interestsSelect = document.getElementById('interests');
+    const selectedInterests = Array.from(interestsSelect.selectedOptions).map(opt => opt.value);
+    formData.set('interests', selectedInterests.join(','));  // Ensure it's a single string
+
+    const resultsContainer = document.getElementById('resultsContainer');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+
+    // Show loading indicator
+    resultsContainer.style.display = 'block';
+    loading.style.display = 'block';
+    results.innerHTML = '';
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/generate_itinerary', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+
+        // ✅ Convert response to JSON correctly
+        const data = await response.json();
+        
+        // ✅ Log the full response to see its structure
+        console.log("API Response:", data);
+
+        // ✅ Check if `itinerary` exists
+        if (!data.generated_itinerary) {
+    throw new Error(`Invalid response format: ${JSON.stringify(data)}`);
+}
+results.innerHTML = marked.parse(data.generated_itinerary);
+
+    } catch (error) {
+        results.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        console.error("Fetch Error:", error);
+    } finally {
+        loading.style.display = 'none';
+    }
+});
+
+    </script>
+</body>
+</html>
