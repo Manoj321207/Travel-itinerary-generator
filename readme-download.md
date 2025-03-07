@@ -34,7 +34,7 @@ The **AI Travel Itinerary Generator** is a web application that helps users crea
 ## ⚙️ Installation & Setup
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/Manoj321207/Travel_Agency.git
+git clone https://github.com/Manoj321207/Travel-itinerary-generator.git
 cd AI-Travel-Itinerary-Generator
 ```
 
