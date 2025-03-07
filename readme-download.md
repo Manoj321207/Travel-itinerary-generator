@@ -73,7 +73,7 @@ We welcome contributions! Feel free to submit a pull request or report any issue
 
 ## 💎 Contact
 
-For queries or collaborations, reach out at **[your-email@example.com](mailto:your-email@example.com)**.
+For queries or collaborations, reach out at **[manojjs207@gmail.com](mailto:manojjs207@gmail.com)**.
 
 ---
 
